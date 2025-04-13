@@ -158,26 +158,7 @@ function buildTodoCheckAndTitle(todo) {
     return checkAndTitleContainer;
 
 }
-// function buildDateIconAndDateText(todo) {
-//     let dateIconAndDateTextContainer = document.createElement("div");
-//     dateIconAndDateTextContainer.className = "dateIcon-and-dateText-Container d-flex align-items-center gap-2"
 
-//     let dateIcon = document.createElement("img");
-//     dateIcon.src = "/images/icons/calendar-24.svg"
-//     dateIcon.alt = "calendar"
-//     dateIcon.className = " date-icon d-inline"
-//     dateIconAndDateTextContainer.appendChild(dateIcon)
-
-//     let textContainer = document.createElement("div");
-//     let dateText = document.createElement("p");
-//     dateText.textContent = todo.date;
-//     dateText.className = "d-inline";
-
-//     textContainer.appendChild(dateText);
-//     dateIconAndDateTextContainer.appendChild(textContainer);
-
-//     return dateIconAndDateTextContainer;
-// }
 function buildDateIconAndDateText(todo) {
     let dateIconAndDateTextContainer = document.createElement("div");
     dateIconAndDateTextContainer.className = "dateIcon-and-dateText-Container d-flex align-items-center gap-2 justify-content-between position-relative";
@@ -209,6 +190,7 @@ function buildDateIconAndDateText(todo) {
             <use href="images/icons/icons.svg#icon-dots"></use>
         </svg>
     `;
+    
 
 
 
@@ -250,7 +232,7 @@ function buildDateIconAndDateText(todo) {
 
             // Agregar el menú solo cuando se hace click (optimización)
             if (!menuContainer.hasChildNodes()) {
-                const menu = buildCardMenu();
+                const menu = buildCardMenu(todo);
                 menu.style.minWidth = "180px"; // Ancho adecuado para el menú
                 menuContainer.appendChild(menu);
             }
@@ -299,7 +281,8 @@ function createTask() {
             return todo.id > max ? todo.id : max;
         }, 0);
 
-        allTodoList.push(new TodoModel(maxId.value + 1, titleInput.value, descriptionInput.value, false, dateInput.value));
+        console.log("maxId" ,maxId);
+        allTodoList.push(new TodoModel(maxId + 1, titleInput.value, descriptionInput.value, false, dateInput.value));
         closeModal();
         cleanSections();
         buildTodoLists();
@@ -315,11 +298,18 @@ function closeModal() {
         console.log("No se encontró una instancia del modal.");
     }
 }
-function deletedById(todo) {
-    return todoList.filter(todo => todo.id !== todoIdToRemove);
+function deletedById(todoId) {
+    let index = allTodoList.findIndex(todo => todo.id === todoId);
+    if (index !== -1) {
+      allTodoList.splice(index, 1);
+    }     
+    buildTodoLists();
+
+    }
+function editTodo(todo){
 }
 
-function buildCardMenu() {
+function buildCardMenu(todo) {
     // Crear contenedor principal card
     const card = document.createElement("div");
     card.className = "card";
@@ -337,6 +327,11 @@ function buildCardMenu() {
 
     const renameLabel = document.createElement("label");
     renameLabel.htmlFor = "rename";
+    renameLabel.addEventListener("click", function (e) {
+    
+        console.log( todo.id );
+
+    })
 
     const renameInput = document.createElement("input");
     renameInput.type = "radio";
@@ -365,6 +360,10 @@ function buildCardMenu() {
 
     const deleteLabel = document.createElement("label");
     deleteLabel.htmlFor = "delete";
+    deleteLabel.addEventListener("click", function (e) {
+    
+        deletedById(todo.id);
+    })
 
     const deleteInput = document.createElement("input");
     deleteInput.type = "radio";
@@ -397,5 +396,4 @@ function buildCardMenu() {
 // document.body.appendChild(buildCardMenu());
 // o
 // algúnContenedor.appendChild(buildCardMenu());
-container.appendChild(buildCardMenu());
 createTask();
