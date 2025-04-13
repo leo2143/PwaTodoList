@@ -1,36 +1,51 @@
-:root{
-    --bg-background: #011f26;
-    --primary:#89d1d9;
-    --secondary:#033a50;
-    --secondaryDark:#033a40;
-    --textColor:#d9d8d0;
-}
-.bg-orange{
-    background-color: var(--bg-background);
-    color: var(--textColor);
+:root {
+  --bg-background: #011f26;
+  --primary: #89d1d9;
+  --secondary: #033a50;
+  --secondaryDark: #033a40;
+  --textColor: #d9d8d0;
 }
 
+.bg-orange {
+  background-color: var(--bg-background);
+  color: var(--textColor);
+}
+
+.border-secondary-dark {
+  border-color: var(--secondaryDark) !important;
+}
+
+.bg-secondary {
+  background-color: var(--secondary) !important;
+}
+
+.date-icon {
+  filter: invert();
+}
 
 .checkbox-wrapper:hover .check {
   stroke-dashoffset: 0;
 }
- 
+
 .checkbox-wrapper {
   position: relative;
   display: inline-block;
   width: 40px;
   height: 40px;
 }
- 
+.section-todo{
+  border-top: gray solid 1px;
+  padding-top: 1.5rem;
+}
 .checkbox-wrapper .background {
-  fill: rgb(75, 50, 121);
+  fill: var(--primary);
   transition: ease all 0.6s;
   -webkit-transition: ease all 0.6s;
 }
- 
+
 .checkbox-wrapper .stroke {
   fill: none;
-  stroke: #fff;
+  stroke: var(--bg-background);
   stroke-miterlimit: 10;
   stroke-width: 2px;
   stroke-dashoffset: 100;
@@ -38,10 +53,10 @@
   transition: ease all 0.6s;
   -webkit-transition: ease all 0.6s;
 }
- 
+
 .checkbox-wrapper .check {
   fill: none;
-  stroke: #fff;
+  stroke: var(--bg-background);
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 2px;
@@ -50,7 +65,7 @@
   transition: ease all 0.6s;
   -webkit-transition: ease all 0.6s;
 }
- 
+
 .checkbox-wrapper input[type=checkbox] {
   position: absolute;
   width: 100%;
@@ -61,19 +76,174 @@
   opacity: 0;
   -appearance: none;
 }
- 
+
 .checkbox-wrapper input[type=checkbox]:hover {
   cursor: pointer;
 }
- 
-.checkbox-wrapper input[type=checkbox]:checked + svg .background {
-  fill: #421c64;
+
+.checkbox-wrapper input[type=checkbox]:checked+svg .background {
+  fill: var(--primary);
 }
- 
-.checkbox-wrapper input[type=checkbox]:checked + svg .stroke {
+
+.checkbox-wrapper input[type=checkbox]:checked+svg .stroke {
   stroke-dashoffset: 0;
 }
- 
-.checkbox-wrapper input[type=checkbox]:checked + svg .check {
+
+.checkbox-wrapper input[type=checkbox]:checked+svg .check {
   stroke-dashoffset: 0;
 }
+
+.add-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--primary) solid 1px;
+  transition: background-color 0.3s ease; /* Añadir transición para suavizar */
+}
+
+.add-container:hover {
+  background-color: #033a50;
+}
+
+/* Afecta al botón cuando el contenedor tiene hover */
+.add-container:hover .custom-button {
+  transform: rotate(90deg); /* Aplica la rotación al botón */
+}
+
+/* Estilo del botón */
+.custom-button {
+  cursor: pointer;
+  outline: none;
+  background: none;
+  border: none;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* SVG dentro del botón */
+.custom-svg {
+  background: none;
+  stroke: var(--primary); 
+  fill: none;
+  transition: fill 0.3s ease, stroke 0.3s ease;
+}
+
+/* Cambia el color del SVG cuando el contenedor tiene hover */
+.add-container:hover .custom-svg {
+  fill: var(--secondary); 
+}
+
+.custom-button:active .custom-svg {
+  stroke: var(--secondaryDark);
+  fill: var(--primary);
+  transition: none;
+}
+
+/*---------------------- estilo opciones editar eliminar -----------------------------*/
+/* Estilos para los tres puntos */
+.dots-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6c757d;
+  transition: color 0.2s;
+  outline: none;
+}
+
+.dots-button:hover {
+  color: #495057;
+}
+
+.dots-icon {
+  vertical-align: middle;
+}
+
+/* Contenedor del menú flotante */
+.menu-floating-container {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 1050; /* Mayor que el z-index de otros elementos */
+  margin-top: 5px;
+}
+
+/* Asegurar que el menú se vea por encima de otros elementos */
+.card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: none;
+  position: relative;
+  z-index: 1051; /* Un punto más que el contenedor */
+}
+
+
+
+
+
+/* From Uiverse.io by 3bdel3ziz-T */ 
+.card {
+  width: 200px;
+  background-color: rgba(36, 40, 50, 1);
+  background-image: linear-gradient(
+    139deg,
+    rgba(36, 40, 50, 1) 0%,
+    rgba(36, 40, 50, 1) 0%,
+    rgba(37, 28, 40, 1) 100%
+  );
+
+  user-select: none;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card .list .element label input[type="radio"] {
+  display: none;
+}
+
+.card .separator {
+  border-top: 1.5px solid #42434a;
+}
+
+.card .list {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0px;
+}
+
+.card .list .element > label {
+  display: flex;
+  align-items: center;
+  color: #7e8590;
+  gap: 10px;
+  transition: all 0.3s ease-out;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.card .list .element label svg {
+  width: 19px;
+  height: 19px;
+  transition: all 0.3s ease-out;
+}
+
+.card .list .element label:has(input[type="radio"]:checked),
+.card .list .element label:hover {
+  background-color: var(--color);
+  color: var(--hover-color);
+}
+
+.card .list .element label:active {
+  transform: scale(0.96);
+}
+
+.card .list .element label:has(input[type="radio"]:checked) svg,
+.card .list .element label:hover svg {
+  stroke: var(--hover-storke);
+}
+
+
