@@ -1,8 +1,12 @@
 :root {
   --bg-background: #011f26;
+  --bg-background_50: #011f267a;
   --primary: #89d1d9;
+  --primary_50: #89d1d97d;
   --secondary: #033a50;
+  --secondary_50: #033a50;
   --secondaryDark: #033a40;
+  --secondaryDark_50: #033a4078;
   --textColor: #d9d8d0;
 }
 
@@ -246,4 +250,18 @@
   stroke: var(--hover-storke);
 }
 
+/* -----------------estilos modal-------------- */
+.modal-content{
+  background-color: var(--bg-background);
+  border: var(--primary) 2px solid;
+  color: var(--textColor);
+}
+.form-control{
+  background: var(--primary);
+  border-color: var(--primary_50);
+  color: var(--bg-background) !important;
+}
+.modal-header .btn-close{
+  filter: invert();
+}
 

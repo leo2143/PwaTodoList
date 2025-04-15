@@ -37,7 +37,7 @@
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered"> <!-- Clase añadida aquí -->
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Crear Tarea</h5>
@@ -46,13 +46,14 @@
                 <div class="modal-body">
                     <!-- Formulario -->
                     <form id="todoForm">
+                        <input type="hidden" id="todoId" name="id">
                         <div class="mb-3">
                             <label for="titleInput" class="form-label">Título</label>
                             <input type="text" class="form-control" id="titleInput" name="title" required>
                         </div>
                         <div class="mb-3">
                             <label for="descriptionInput" class="form-label">Descripción</label>
-                            <input type="text" class="form-control" id="descriptionInput" name="description" required>
+                            <textarea type="text" class="form-control" id="descriptionInput" name="description" required></textarea>
                         </div>
                         <div class="mb-3">
                             <label for="dateInput" class="form-label">Fecha</label>
@@ -66,6 +67,7 @@
                 </div>
             </div>
         </div>
+    </div>
 </body>
 
 </html>

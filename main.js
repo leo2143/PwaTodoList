@@ -265,27 +265,32 @@ function findTodoById(todo) {
     return allTodoList.find(todo => todo.id === todoIdToFind);
 
 }
-function createTask() {
-
-    // Seleccionar el formulario y los campos por su ID
-    const form = document.getElementById("todoForm");
-    const titleInput = document.getElementById("titleInput");
-    const descriptionInput = document.getElementById("descriptionInput");
-    const dateInput = document.getElementById("dateInput");
-
-    // Recuperar los datos al enviar el formulario
+function createTask(todo) {
     form.addEventListener("submit", function (event) {
         event.preventDefault();
-
         const maxId = allTodoList.reduce((max, todo) => {
             return todo.id > max ? todo.id : max;
         }, 0);
-
         console.log("maxId" ,maxId);
-        allTodoList.push(new TodoModel(maxId + 1, titleInput.value, descriptionInput.value, false, dateInput.value));
+        allTodoList.push(new TodoModel(maxId + 1, todo.title, todo.description, false, todo.date));
         closeModal();
         cleanSections();
         buildTodoLists();
+    });
+}
+function updateTask(todo) {
+
+    const todoId = parseInt(form.dataset.editId);
+    allTodoList = allTodoList.map(todo => {
+        if (todo.id === todoId) {
+            return {
+                ...todo,
+                title: titleInput.value,
+                description: descriptionInput.value,
+                date: dateInput.value
+            };
+        }
+        return todo;
     });
 
 }
@@ -307,6 +312,22 @@ function deletedById(todoId) {
 
     }
 function editTodo(todo){
+
+    const myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+    const form = document.getElementById("todoForm");
+    
+    // Cambiar el título del modal para edición
+    document.getElementById('exampleModalLabel').textContent = 'Editar Tarea';
+    
+    // Establecer valores en los inputs (usando .value en lugar de textContent)
+    document.getElementById("titleInput").value = todo.title;
+    document.getElementById("descriptionInput").value = todo.description;
+    document.getElementById("dateInput").value = todo.date;
+    
+    // Agregar ID del todo como dato oculto para la actualización
+    form.dataset.editId = todo.id;
+    
+    myModal.show();
 }
 
 function buildCardMenu(todo) {
@@ -350,7 +371,10 @@ function buildCardMenu(todo) {
     renameIcon.appendChild(renameUse);
     renameLabel.appendChild(renameInput);
     renameLabel.appendChild(renameIcon);
-    renameLabel.appendChild(document.createTextNode(" Rename"));
+    renameLabel.appendChild(document.createTextNode(" Editar"));
+    renameLabel.addEventListener("click", function (e) {
+        editTodo(todo);
+    })
     renameElement.appendChild(renameLabel);
 
     // Segundo elemento li (Delete)
@@ -359,7 +383,7 @@ function buildCardMenu(todo) {
     deleteElement.style.setProperty("--color", "#8e2a2a");
 
     const deleteLabel = document.createElement("label");
-    deleteLabel.htmlFor = "delete";
+    deleteLabel.htmlFor = "Eliminar";
     deleteLabel.addEventListener("click", function (e) {
     
         deletedById(todo.id);
@@ -392,8 +416,30 @@ function buildCardMenu(todo) {
     return card;
 }
 
-// Uso:
-// document.body.appendChild(buildCardMenu());
-// o
-// algúnContenedor.appendChild(buildCardMenu());
+function handleSave() {
+    const form = document.getElementById("todoForm");
+    const todoData = {
+        id: form.elements.id.value,
+        title: form.elements.title.value,
+        description: form.elements.description.value,
+        date: form.elements.date.value
+    };
+    const isEdit = form.dataset.editId;
+
+    if (isEdit) {
+        // Lógica para actualizar
+        updateTask(todoData);
+    } else {
+        // Lógica para crear nuevo
+        createTask(todoData);
+    }
+
+    closeModal();
+    cleanSections();
+    buildTodoLists();
+    
+    // Limpiar ID de edición
+    delete form.dataset.editId;
+}
+
 createTask();
