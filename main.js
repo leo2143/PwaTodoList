@@ -11,7 +11,7 @@ const estudiarTodo = new TodoModel(1, "estudiar para el parcial", "debo estudiar
 
 const estudiarCompleted = new TodoModel(2, "estudiar para el parcial 2", "debo estudiar para el parcial de logica y para el parcial de php objetos", true, "22/22/2025");
 
-const allTodoList = [estudiarTodo, estudiarCompleted];
+let allTodoList = [estudiarTodo, estudiarCompleted];
 
 const AllTodoPending = [];
 
@@ -79,7 +79,12 @@ function buildTodos(todo) {
 
     let todoContainer = document.createElement("div");
     todoContainer.onclick = //llamar a la funcion del modal pasandole el objeto
-        todoContainer.className = "todo-container d-flex justify-content-between p-4 bg-secondary align-items-center border border-3 border-secondary-dark rounded-4 gap-4";
+    todoContainer.className = "todo-container d-flex justify-content-between p-4 align-items-center border border-3 border-secondary-dark rounded-4 gap-4";
+    todoContainer.addEventListener("click", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        toogleModalViewContent(todo)
+    })
     todoContainer.appendChild(buildTodoCheckAndTitle(todo));
     todoContainer.appendChild(buildDateIconAndDateText(todo));
     return todoContainer;
@@ -93,7 +98,7 @@ function buildTodoCompleteds(todo) {
     // container.appendChild(h2);
     let todoContainer = document.createElement("div");
     todoContainer.onclick = //llamar a la funcion del modal pasandole el objeto
-        todoContainer.className = "todo-completed-container d-flex justify-content-between p-4 bg-secondary align-items-center border border-3 border-secondary-dark rounded-4";
+        todoContainer.className = "todo-completed-container d-flex justify-content-between p-4 align-items-center border border-3 border-secondary-dark rounded-4";
     todoContainer.appendChild(buildTodoCheckAndTitle(todo));
     todoContainer.appendChild(buildDateIconAndDateText(todo));
     return todoContainer;
@@ -190,10 +195,6 @@ function buildDateIconAndDateText(todo) {
             <use href="images/icons/icons.svg#icon-dots"></use>
         </svg>
     `;
-    
-
-
-
     //todo: averiguar porque no funciona :
     // // Botón de tres puntos usando el sprite SVG
     // let dotsButton = document.createElement("button");
@@ -207,8 +208,7 @@ function buildDateIconAndDateText(todo) {
     // dotsUse.setAttribute("href","images/icons/icons.svg#icon-dots");
 
     // dotsIcon.appendChild(dotsUse);
-    // dotsButton.appendChild(dotsIcon);
-
+    // dotsButton.appendChild(dotsIcon)
 
 
     // Contenedor para el menú (flotante)
@@ -265,44 +265,16 @@ function findTodoById(todo) {
     return allTodoList.find(todo => todo.id === todoIdToFind);
 
 }
-function createTask(todo) {
-    form.addEventListener("submit", function (event) {
-        event.preventDefault();
-        const maxId = allTodoList.reduce((max, todo) => {
-            return todo.id > max ? todo.id : max;
-        }, 0);
-        console.log("maxId" ,maxId);
-        allTodoList.push(new TodoModel(maxId + 1, todo.title, todo.description, false, todo.date));
-        closeModal();
-        cleanSections();
-        buildTodoLists();
-    });
-}
-function updateTask(todo) {
-
-    const todoId = parseInt(form.dataset.editId);
-    allTodoList = allTodoList.map(todo => {
-        if (todo.id === todoId) {
-            return {
-                ...todo,
-                title: titleInput.value,
-                description: descriptionInput.value,
-                date: dateInput.value
-            };
-        }
-        return todo;
-    });
-
-}
+//metodo que permite cerrar el modal
 function closeModal() {
-    const myModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
-
-    if (myModal) {
-        myModal.hide();
-    } else {
-        console.log("No se encontró una instancia del modal.");
-    }
+    const modalElement = document.getElementById("exampleModal");
+    const modalInstance = bootstrap.Modal.getInstance(modalElement) 
+        || new bootstrap.Modal(modalElement);
+    modalInstance.hide();
 }
+
+
+//metodo que se encarga de eliminar un todo por id
 function deletedById(todoId) {
     let index = allTodoList.findIndex(todo => todo.id === todoId);
     if (index !== -1) {
@@ -310,26 +282,107 @@ function deletedById(todoId) {
     }     
     buildTodoLists();
 
-    }
-function editTodo(todo){
+}
 
-    const myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+//funcion que se encarga de crear un todo 
+function createTask(todo) {
+    console.log("entro al create")
+    const maxId = allTodoList.reduce((max, todo) => {
+        return todo.id > max ? todo.id : max;
+    }, 0);
+    console.log("maxId" ,maxId);
+    allTodoList.push(new TodoModel(maxId + 1, todo.title, todo.description, false, todo.date));
+    closeModal();
+    cleanSections();
+    buildTodoLists();
+}   
+//funcion que se encarga de hacer un update al todo
+function updateTask(todo) {
+    console.log("entro al update")
     const form = document.getElementById("todoForm");
+    const todoId = parseInt(form.dataset.editId);
+    allTodoList = allTodoList.map(todomap => {
+        if (todomap.id === todoId) {
+            return {
+                ...todomap,
+                title: todo.title,
+                description: todo.description,
+                date: todo.date
+            };
+        }
+        return todomap;
+    });
+    closeModal();
+    cleanSections();
+    buildTodoLists();
+}
+
+//funcion que se encarga de renderizar los datos 
+// seleccionados y impactar el cambio en un mismo objeto    
+function toogleModal(todo,isEdit){
+
+    const modalElement = document.getElementById('exampleModal');
+    const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
+        const form = document.getElementById("todoForm");
     
     // Cambiar el título del modal para edición
+    if(isEdit){
     document.getElementById('exampleModalLabel').textContent = 'Editar Tarea';
-    
     // Establecer valores en los inputs (usando .value en lugar de textContent)
     document.getElementById("titleInput").value = todo.title;
     document.getElementById("descriptionInput").value = todo.description;
     document.getElementById("dateInput").value = todo.date;
-    
     // Agregar ID del todo como dato oculto para la actualización
-    form.dataset.editId = todo.id;
-    
+    form.dataset.editId = todo.id;    
+    }    
     myModal.show();
 }
+function toogleModalViewContent(todo){
 
+    const modalElement = document.getElementById('viewContent');
+    const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
+    const form = document.getElementById("todoForm");
+    // Cambiar el título del modal para edición
+    document.getElementById('exampleModalLabel').textContent = 'Editar Tarea';
+    // Establecer valores en los inputs (usando .value en lugar de textContent)
+    document.getElementById("titleInput").value = todo.title;
+    document.getElementById("descriptionInput").value = todo.description;
+    document.getElementById("dateInput").value = todo.date;
+    // Agregar ID del todo como dato oculto para la actualización
+    form.dataset.editId = todo.id;    
+    myModal.show();
+}
+function AddContainer(){
+   addContain = document.getElementById("add-container");
+   addContain.addEventListener("click", function (e) {
+    toogleModal(null,false);
+    })
+
+    }
+//Funcion que decide si es un caso de update o create
+function handleSave() {
+    const form = document.getElementById("todoForm");
+    const todoData = {
+        id: form.elements.id.value,
+        title: form.elements.title.value,
+        description: form.elements.description.value,
+        date: form.elements.date.value
+    };
+    console.log(todoData,"----------------->")
+    const isEdit = form.dataset.editId;
+
+    if (isEdit) {
+        // Lógica para actualizar
+        updateTask(todoData,form);
+    } else {
+        // Lógica para crear nuevo
+        createTask(todoData,form);
+    }
+    // Limpiar ID de edición
+    delete form.dataset.editId;
+}
+
+//funcion que construyo los botones de editar y eliminar
 function buildCardMenu(todo) {
     // Crear contenedor principal card
     const card = document.createElement("div");
@@ -338,20 +391,16 @@ function buildCardMenu(todo) {
     // Crear lista ul
     const list = document.createElement("ul");
     list.className = "list";
-    list.style.setProperty("--color", "#e3e700");
-    list.style.setProperty("--hover-storke", "#fff");
-    list.style.setProperty("--hover-color", "#fff");
 
-    // Primer elemento li (Rename)
     const renameElement = document.createElement("li");
-    renameElement.className = "element";
+    renameElement.className = "element rename";
+    renameElement.style.setProperty("--color", "#045879");
+    renameElement.style.setProperty("--hover-color", "#fff");
 
     const renameLabel = document.createElement("label");
     renameLabel.htmlFor = "rename";
     renameLabel.addEventListener("click", function (e) {
     
-        console.log( todo.id );
-
     })
 
     const renameInput = document.createElement("input");
@@ -373,7 +422,7 @@ function buildCardMenu(todo) {
     renameLabel.appendChild(renameIcon);
     renameLabel.appendChild(document.createTextNode(" Editar"));
     renameLabel.addEventListener("click", function (e) {
-        editTodo(todo);
+    toogleModal(todo,true);
     })
     renameElement.appendChild(renameLabel);
 
@@ -416,30 +465,11 @@ function buildCardMenu(todo) {
     return card;
 }
 
-function handleSave() {
-    const form = document.getElementById("todoForm");
-    const todoData = {
-        id: form.elements.id.value,
-        title: form.elements.title.value,
-        description: form.elements.description.value,
-        date: form.elements.date.value
-    };
-    const isEdit = form.dataset.editId;
 
-    if (isEdit) {
-        // Lógica para actualizar
-        updateTask(todoData);
-    } else {
-        // Lógica para crear nuevo
-        createTask(todoData);
-    }
-
-    closeModal();
-    cleanSections();
-    buildTodoLists();
-    
-    // Limpiar ID de edición
-    delete form.dataset.editId;
-}
-
+document.getElementById("todoForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+    handleSave();
+});
+AddContainer();
+initForm();
 createTask();

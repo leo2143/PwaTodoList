@@ -17,7 +17,7 @@
 <body class="container bg-orange">
     <h1>Bienvenido a tu interfaz para crear, guardar, modificar y eliminar tareas</h1>
 
-    <div class="add-container rounded-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    <div id="add-container" class="add-container rounded-3">
         <button class="custom-button p-3 w-100" title="Add New">
             <svg class="custom-svg" viewBox="0 0 24 24" height="50px" width="50px" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-width="1.5"
@@ -64,6 +64,26 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary" form="todoForm">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="viewContent" tabindex="-1" aria-labelledby="viewContent" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"> <!-- Clase añadida aquí -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="view">Titulo todo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    
+                    <div>
+                        <p>descripcion</p>
+                    </div>
+
+
                 </div>
             </div>
         </div>

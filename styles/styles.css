@@ -9,6 +9,9 @@
   --secondaryDark_50: #033a4078;
   --textColor: #d9d8d0;
 }
+.bg-primary{
+  background-color: var(--primary);
+}
 
 .bg-orange {
   background-color: var(--bg-background);
@@ -103,6 +106,7 @@
   justify-content: center;
   border: var(--primary) solid 1px;
   transition: background-color 0.3s ease; /* Añadir transición para suavizar */
+  overflow: hidden;
 }
 
 .add-container:hover {
@@ -200,7 +204,13 @@
   flex-direction: column;
   gap: 8px;
 }
-
+.list{
+  --hover-storke:#fff;
+  --hover-color: #fff;
+}
+.delete{
+  color:#8e2a2a;
+}
 .card .list .element label input[type="radio"] {
   display: none;
 }
@@ -263,5 +273,16 @@
 }
 .modal-header .btn-close{
   filter: invert();
+}
+
+
+.todo-container, .todo-completed-container{
+  background-color: var(--secondary);
+  transition: background-color 0.3s ease;
+}
+
+.todo-container:hover,.todo-completed-container:hover {
+  background-color: #044c68;
+  
 }
 
