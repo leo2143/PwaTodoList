@@ -471,5 +471,4 @@ document.getElementById("todoForm").addEventListener("submit", function (event) 
     handleSave();
 });
 AddContainer();
-initForm();
-createTask();
+createTask(allTodoList);
