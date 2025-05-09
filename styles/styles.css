@@ -108,6 +108,9 @@
   transition: background-color 0.3s ease; /* Añadir transición para suavizar */
   overflow: hidden;
 }
+.check-and-title-container{
+  overflow: hidden;
+}
 
 .add-container:hover {
   background-color: #033a50;
@@ -152,13 +155,13 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #6c757d;
+  color: var(--hover-storke);
   transition: color 0.2s;
   outline: none;
 }
 
 .dots-button:hover {
-  color: #495057;
+  color: var(--textColor);
 }
 
 .dots-icon {

@@ -11,14 +11,43 @@ const estudiarTodo = new TodoModel(1, "estudiar para el parcial", "debo estudiar
 
 const estudiarCompleted = new TodoModel(2, "estudiar para el parcial 2", "debo estudiar para el parcial de logica y para el parcial de php objetos", true, "22/22/2025");
 
-let allTodoList = [estudiarTodo, estudiarCompleted];
+let allTodoList = [];
+
+// Llamar a createTask con un objeto válido, no la lista completa
+document.addEventListener('DOMContentLoaded', () => {
+    let storedTodos = localStorage.getItem('allTodoList');
+    if (storedTodos) {
+        allTodoList = JSON.parse(storedTodos).map(todo =>
+            new TodoModel(todo.id, todo.title, todo.description, todo.check, todo.date)
+        );
+        buildTodoLists(); // reconstruir la interfaz
+    } else {
+        // Si no hay datos en localStorage, crear tareas predeterminadas (solo ejemplo)
+        allTodoList = [
+            new TodoModel(1, "Estudiar JavaScript", "Estudiar para el examen de JavaScript", false, "2025-05-01"),
+            new TodoModel(2, "Estudiar CSS", "Estudiar para el examen de CSS", false, "2025-05-02")
+        ];
+        updateStorage(); // Guarda las tareas predeterminadas
+    }
+
+});
+
+// Cada vez que modifiques allTodoList
+function updateStorage() {
+    localStorage.setItem('allTodoList', JSON.stringify(allTodoList));
+}
+
 
 const AllTodoPending = [];
 
 const AllTodoCompleted = [];
 
+
+
+
 const container = document.getElementById("section-todo")
 
+//funcion para recorrer la lista general de todo y discriminar por si esta completado o no y añadirlo a su respectiva lista
 function initializeTodoLists(allTodoList) {
     allTodoList.forEach(todo => {
         if (!todo.check) {
@@ -29,8 +58,7 @@ function initializeTodoLists(allTodoList) {
         }
     });
 }
-buildTodoLists();
-
+//funcion para crear los todo
 function buildTodoLists() {
     // Limpiar el contenedor antes de construir la interfaz
     container.innerHTML = "";
@@ -43,8 +71,8 @@ function buildTodoLists() {
         let todoCompleted = document.createElement("div");
         todoCompleted.className = "d-flex flex-column gap-5"
 
-        let h2Pending = document.createElement("h2");
-        h2Pending.textContent = "TO DO";
+        let h2Pending = document.createElement("h3");
+        h2Pending.textContent = "Tareas por hacer";
 
         todoCompletedContainer.appendChild(h2Pending);
 
@@ -60,10 +88,10 @@ function buildTodoLists() {
         let todoCompletedContainer = document.createElement("div");
 
         let todoCompleted = document.createElement("div");
-        todoCompleted.className = "d-flex flex-column gap-5"
+        todoCompleted.className = " d-flex flex-column gap-5"
 
-        let h2Completed = document.createElement("h2");
-        h2Completed.textContent = "COMPLETED";
+        let h2Completed = document.createElement("h3");
+        h2Completed.textContent = "Tareas Completadas";
         todoCompletedContainer.appendChild(h2Completed);
 
 
@@ -75,36 +103,36 @@ function buildTodoLists() {
     }
 }
 
+//funcion para crear en el dom el contenedor de los todos no completados
 function buildTodos(todo) {
 
     let todoContainer = document.createElement("div");
-    todoContainer.onclick = //llamar a la funcion del modal pasandole el objeto
-    todoContainer.className = "todo-container d-flex justify-content-between p-4 align-items-center border border-3 border-secondary-dark rounded-4 gap-4";
+    todoContainer.className = "todo-container d-flex flex-column flex-md-row justify-content-between p-4 align-items-center border border-3 border-secondary-dark rounded-4 gap-4 mt-3 ";
     todoContainer.addEventListener("click", function (e) {
         e.stopPropagation();
         e.preventDefault();
-        toogleModalViewContent(todo)
+        constructAndShowTodoModal(todo)
     })
     todoContainer.appendChild(buildTodoCheckAndTitle(todo));
     todoContainer.appendChild(buildDateIconAndDateText(todo));
     return todoContainer;
 }
-
+//funcion para crear en el dom los todo completados
 function buildTodoCompleteds(todo) {
-
-    // let container = document.getElementById("section-todo")
-    // let h2 = document.createElement("h2");
-    // h2.textContent = "COMPLETED"
-    // container.appendChild(h2);
     let todoContainer = document.createElement("div");
-    todoContainer.onclick = //llamar a la funcion del modal pasandole el objeto
-        todoContainer.className = "todo-completed-container d-flex justify-content-between p-4 align-items-center border border-3 border-secondary-dark rounded-4";
+    todoContainer.className = "todo-completed-container d-flex flex-column flex-md-row justify-content-between p-4 align-items-center border border-3 border-secondary-dark rounded-4 mt-3 gap-4";
+    todoContainer.addEventListener("click", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        constructAndShowTodoModal(todo)
+    })
     todoContainer.appendChild(buildTodoCheckAndTitle(todo));
     todoContainer.appendChild(buildDateIconAndDateText(todo));
     return todoContainer;
 
 }
 
+//funcion para crear en el dom el titulo del todo y el check input
 function buildTodoCheckAndTitle(todo) {
 
     //contuctor de check y titulo
@@ -118,8 +146,10 @@ function buildTodoCheckAndTitle(todo) {
     let input = document.createElement("input");
     input.type = "checkbox";
     input.checked = todo.check;
-    input.onclick = function () {
+    input.onclick = function (e) {
+        e.stopPropagation();
         todo.check = input.checked;
+        updateStorage();
         buildTodoLists();
     };
 
@@ -155,7 +185,8 @@ function buildTodoCheckAndTitle(todo) {
     checkAndTitleContainer.appendChild(checkWrapper);
 
 
-    let title = document.createElement("h2");
+    let title = document.createElement("h4");
+    title.className = "d-block m-0";
     checkAndTitleContainer.appendChild(checkWrapper);
     title.textContent = todo.title;
     checkAndTitleContainer.appendChild(title);
@@ -163,7 +194,7 @@ function buildTodoCheckAndTitle(todo) {
     return checkAndTitleContainer;
 
 }
-
+//funcion para crear en el dom el icono de fecha y el texto de fecha
 function buildDateIconAndDateText(todo) {
     let dateIconAndDateTextContainer = document.createElement("div");
     dateIconAndDateTextContainer.className = "dateIcon-and-dateText-Container d-flex align-items-center gap-2 justify-content-between position-relative";
@@ -173,7 +204,7 @@ function buildDateIconAndDateText(todo) {
     dateContent.className = "d-flex align-items-center gap-2";
 
     let dateIcon = document.createElement("img");
-    dateIcon.src = "/images/icons/calendar-24.svg";
+    dateIcon.src = "images/icons/calendar-24.svg";
     dateIcon.alt = "calendar";
     dateIcon.className = "date-icon d-inline";
     dateContent.appendChild(dateIcon);
@@ -187,7 +218,7 @@ function buildDateIconAndDateText(todo) {
 
     dateIconAndDateTextContainer.appendChild(dateContent);
 
-    // Botón de tres puntos usando el sprite SVG
+    // Botón de tres puntos usando el sprite SVG (no pude hacerlo funcionar por document.createElement)
     let dotsButton = document.createElement("button");
     dotsButton.className = "btn btn-link p-0 dots-button";
     dotsButton.innerHTML = `
@@ -195,23 +226,7 @@ function buildDateIconAndDateText(todo) {
             <use href="images/icons/icons.svg#icon-dots"></use>
         </svg>
     `;
-    //todo: averiguar porque no funciona :
-    // // Botón de tres puntos usando el sprite SVG
-    // let dotsButton = document.createElement("button");
-    // dotsButton.className = "btn btn-link p-0 dots-button";
-    // dotsIcon = document.createElement("svg");
-    // dotsIcon.className = "dots-icon";
-    // dotsIcon.style = "dots-icon";
 
-
-    // dotsUse = document.createElement("use");
-    // dotsUse.setAttribute("href","images/icons/icons.svg#icon-dots");
-
-    // dotsIcon.appendChild(dotsUse);
-    // dotsButton.appendChild(dotsIcon)
-
-
-    // Contenedor para el menú (flotante)
     let menuContainer = document.createElement("div");
     menuContainer.className = "menu-floating-container";
     menuContainer.style.display = "none";
@@ -230,10 +245,9 @@ function buildDateIconAndDateText(todo) {
 
             menuContainer.style.display = "block";
 
-            // Agregar el menú solo cuando se hace click (optimización)
             if (!menuContainer.hasChildNodes()) {
                 const menu = buildCardMenu(todo);
-                menu.style.minWidth = "180px"; // Ancho adecuado para el menú
+                menu.style.minWidth = "180px";
                 menuContainer.appendChild(menu);
             }
         } else {
@@ -256,46 +270,50 @@ function buildDateIconAndDateText(todo) {
 
     return dateIconAndDateTextContainer;
 }
+//funcion para limpiar la lista de todo checkeado y deschekeado
 function cleanSections() {
     container.innerHTML = "";
     AllTodoCompleted.length = 0;;
     AllTodoPending.length = 0;;
 }
+//funcion para buscar el todo por id
 function findTodoById(todo) {
     return allTodoList.find(todo => todo.id === todoIdToFind);
 
 }
-//metodo que permite cerrar el modal
+//funcion que permite cerrar el modal
 function closeModal() {
     const modalElement = document.getElementById("exampleModal");
-    const modalInstance = bootstrap.Modal.getInstance(modalElement) 
+    const modalInstance = bootstrap.Modal.getInstance(modalElement)
         || new bootstrap.Modal(modalElement);
     modalInstance.hide();
 }
 
-
-//metodo que se encarga de eliminar un todo por id
+//funcion que se encarga de eliminar un todo por id
 function deletedById(todoId) {
     let index = allTodoList.findIndex(todo => todo.id === todoId);
     if (index !== -1) {
-      allTodoList.splice(index, 1);
-    }     
+        allTodoList.splice(index, 1);
+    }
     buildTodoLists();
+    updateStorage();
 
 }
 
 //funcion que se encarga de crear un todo 
 function createTask(todo) {
-    console.log("entro al create")
+
     const maxId = allTodoList.reduce((max, todo) => {
         return todo.id > max ? todo.id : max;
     }, 0);
-    console.log("maxId" ,maxId);
-    allTodoList.push(new TodoModel(maxId + 1, todo.title, todo.description, false, todo.date));
-    closeModal();
-    cleanSections();
-    buildTodoLists();
-}   
+    if (maxId != 0) {
+        allTodoList.push(new TodoModel(maxId + 1, todo.title, todo.description, false, todo.date));
+        closeModal();
+        cleanSections();
+        buildTodoLists();
+        updateStorage();
+    }
+}
 //funcion que se encarga de hacer un update al todo
 function updateTask(todo) {
     console.log("entro al update")
@@ -315,50 +333,39 @@ function updateTask(todo) {
     closeModal();
     cleanSections();
     buildTodoLists();
+    updateStorage();
+
 }
 
 //funcion que se encarga de renderizar los datos 
 // seleccionados y impactar el cambio en un mismo objeto    
-function toogleModal(todo,isEdit){
+function toogleModal(todo, isEdit) {
 
     const modalElement = document.getElementById('exampleModal');
     const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
-        const form = document.getElementById("todoForm");
-    
-    // Cambiar el título del modal para edición
-    if(isEdit){
-    document.getElementById('exampleModalLabel').textContent = 'Editar Tarea';
-    // Establecer valores en los inputs (usando .value en lugar de textContent)
-    document.getElementById("titleInput").value = todo.title;
-    document.getElementById("descriptionInput").value = todo.description;
-    document.getElementById("dateInput").value = todo.date;
-    // Agregar ID del todo como dato oculto para la actualización
-    form.dataset.editId = todo.id;    
-    }    
-    myModal.show();
-}
-function toogleModalViewContent(todo){
-
-    const modalElement = document.getElementById('viewContent');
-    const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
     const form = document.getElementById("todoForm");
+
     // Cambiar el título del modal para edición
-    document.getElementById('exampleModalLabel').textContent = 'Editar Tarea';
-    // Establecer valores en los inputs (usando .value en lugar de textContent)
-    document.getElementById("titleInput").value = todo.title;
-    document.getElementById("descriptionInput").value = todo.description;
-    document.getElementById("dateInput").value = todo.date;
-    // Agregar ID del todo como dato oculto para la actualización
-    form.dataset.editId = todo.id;    
+    if (isEdit) {
+        document.getElementById('exampleModalLabel').textContent = 'Editar Tarea';
+        // Establecer valores en los inputs (usando .value en lugar de textContent)
+        document.getElementById("titleInput").value = todo.title;
+        document.getElementById("descriptionInput").value = todo.description;
+        document.getElementById("dateInput").value = todo.date;
+        // Agregar ID del todo como dato oculto para la actualización
+        form.dataset.editId = todo.id;
+    }
     myModal.show();
 }
-function AddContainer(){
-   addContain = document.getElementById("add-container");
-   addContain.addEventListener("click", function (e) {
-    toogleModal(null,false);
+
+function AddContainer() {
+    addContain = document.getElementById("add-container");
+    console.log("here")
+    addContain.addEventListener("click", function (e) {
+        toogleModal(null, false);
     })
 
-    }
+}
 //Funcion que decide si es un caso de update o create
 function handleSave() {
     const form = document.getElementById("todoForm");
@@ -368,15 +375,14 @@ function handleSave() {
         description: form.elements.description.value,
         date: form.elements.date.value
     };
-    console.log(todoData,"----------------->")
     const isEdit = form.dataset.editId;
 
     if (isEdit) {
         // Lógica para actualizar
-        updateTask(todoData,form);
+        updateTask(todoData, form);
     } else {
         // Lógica para crear nuevo
-        createTask(todoData,form);
+        createTask(todoData, form);
     }
     // Limpiar ID de edición
     delete form.dataset.editId;
@@ -400,7 +406,7 @@ function buildCardMenu(todo) {
     const renameLabel = document.createElement("label");
     renameLabel.htmlFor = "rename";
     renameLabel.addEventListener("click", function (e) {
-    
+
     })
 
     const renameInput = document.createElement("input");
@@ -422,7 +428,7 @@ function buildCardMenu(todo) {
     renameLabel.appendChild(renameIcon);
     renameLabel.appendChild(document.createTextNode(" Editar"));
     renameLabel.addEventListener("click", function (e) {
-    toogleModal(todo,true);
+        toogleModal(todo, true);
     })
     renameElement.appendChild(renameLabel);
 
@@ -434,7 +440,7 @@ function buildCardMenu(todo) {
     const deleteLabel = document.createElement("label");
     deleteLabel.htmlFor = "Eliminar";
     deleteLabel.addEventListener("click", function (e) {
-    
+
         deletedById(todo.id);
     })
 
@@ -454,7 +460,7 @@ function buildCardMenu(todo) {
     deleteIcon.appendChild(deleteUse);
     deleteLabel.appendChild(deleteInput);
     deleteLabel.appendChild(deleteIcon);
-    deleteLabel.appendChild(document.createTextNode(" Delete"));
+    deleteLabel.appendChild(document.createTextNode("Eliminar"));
     deleteElement.appendChild(deleteLabel);
 
     // Ensamblar todos los elementos
@@ -465,10 +471,85 @@ function buildCardMenu(todo) {
     return card;
 }
 
+//funcion para crear en el dom el modal que muestra la informacion del todo
+function constructAndShowTodoModal(todo) {
+    const modal = document.createElement("div");
+    modal.className = "modal fade";
+    modal.id = "viewContent";
+    modal.tabIndex = -1;
+    modal.setAttribute("aria-labelledby", "viewContent");
+    modal.setAttribute("aria-hidden", "true");
+
+    const dialog = document.createElement("div");
+    dialog.className = "modal-dialog modal-dialog-centered";
+
+    const content = document.createElement("div");
+    content.className = "modal-content";
+
+    const header = document.createElement("div");
+    header.className = "modal-header";
+
+    const headerText = document.createElement("div");
+    headerText.className = "d-flex flex-column align-items-start justify-content-between";
+
+    const title = document.createElement("h5");
+    title.className = "modal-title";
+    title.id = "view";
+    title.textContent = todo.title || "Sin título";
+
+    const date = document.createElement("p");
+    date.className = "d-block m-0 fw-light";
+    date.textContent = todo.date || "Sin fecha";
+
+    headerText.appendChild(title);
+    headerText.appendChild(date);
+
+    const closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.className = "btn-close";
+    closeBtn.setAttribute("data-bs-dismiss", "modal");
+    closeBtn.setAttribute("aria-label", "Close");
+
+    header.appendChild(headerText);
+    header.appendChild(closeBtn);
+
+    const body = document.createElement("div");
+    body.className = "modal-body";
+
+    const description = document.createElement("p");
+    description.textContent = todo.description || "Sin descripción";
+
+    body.appendChild(description);
+
+    content.appendChild(header);
+    content.appendChild(body);
+    dialog.appendChild(content);
+    modal.appendChild(dialog);
+
+    document.body.appendChild(modal);
+
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+
+    modal.addEventListener("hidden.bs.modal", () => {
+        modal.remove();
+    });
+}
+//funcion para añadir al boton la funcionalidad de crear la tarea
 
 document.getElementById("todoForm").addEventListener("submit", function (event) {
     event.preventDefault();
     handleSave();
 });
+
+//aplicar el service worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker registrado con éxito:', reg))
+            .catch(err => console.log('Error al registrar el Service Worker:', err));
+    });
+}
 AddContainer();
-createTask(allTodoList);
+buildTodoLists();
+
