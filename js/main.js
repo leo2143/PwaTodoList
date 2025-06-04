@@ -542,6 +542,38 @@ document.getElementById("todoForm").addEventListener("submit", function (event) 
     handleSave();
 });
 
+let deferredPrompt;
+const btnInstall = document.getElementById('btnInstall');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('Evento beforeinstallprompt disparado');
+    e.preventDefault();
+    deferredPrompt = e;
+    btnInstall.classList.remove('d-none'); // Mostramos el botón
+});
+
+btnInstall.addEventListener('click', () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+
+    deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+            console.log('Usuario aceptó la instalación');
+        } else {
+            console.log('Usuario rechazó la instalación');
+        }
+        deferredPrompt = null;
+    });
+});
+
+window.addEventListener('appinstalled', () => {
+    console.log('App instalada con éxito');
+    btnInstall.classList.add('d-none');
+});
+
+
+
 //aplicar el service worker
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -550,6 +582,8 @@ if ('serviceWorker' in navigator) {
             .catch(err => console.log('Error al registrar el Service Worker:', err));
     });
 }
+
+
 AddContainer();
 buildTodoLists();
 
