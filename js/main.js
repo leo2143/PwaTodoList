@@ -577,6 +577,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+function solicitarPermisoNotificacion() {
+    console.log("llamo")
+    if (!('Notification' in window)) {
+        alert('Este navegador no soporta notificaciones.');
+        return;
+    }
+
+    Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+            console.log('Permiso para notificaciones concedido ✅');
+        } else {
+            console.warn('Permiso para notificaciones denegado ❌');
+        }
+    });
+}
+function mostrarNotificacionTarea() {
+    if (Notification.permission === 'granted') {
+
+        const tareaPendiente = allTodoList.find(todo => !todo.check);
+        if (tareaPendiente == null) {
+            navigator.serviceWorker.getRegistration().then(reg => {
+                if (reg) {
+                    reg.showNotification('No tienes tareas pendientes', {
+                        body: 'Muy bien echo haz completado todas tus tareas :) ',
+                        icon: 'favicon/android-chrome-192x192.png',
+                        badge: 'favicon/favicon-32x32.png',
+                        vibrate: [200, 100, 200],
+                        tag: 'recordatorio-tarea-' + Date.now()  // tag único
+                    });
+                }
+            });
+
+        } else {
+            navigator.serviceWorker.getRegistration().then(reg => {
+                if (reg) {
+                    reg.showNotification('Tiene una tarea pendiente: ' + tareaPendiente.title, {
+                        body: tareaPendiente.description,
+                        icon: 'favicon/android-chrome-192x192.png',
+                        badge: 'favicon/favicon-32x32.png',
+                        vibrate: [200, 100, 200],
+                        tag: 'recordatorio-tarea-' + Date.now()  // tag único
+                    });
+                }
+            });
+        }
+    }
+}
+setTimeout(() => {
+    mostrarNotificacionTarea();
+}, 2000);
 
 
 
@@ -592,4 +642,5 @@ if ('serviceWorker' in navigator) {
 
 AddContainer();
 buildTodoLists();
+solicitarPermisoNotificacion();
 
