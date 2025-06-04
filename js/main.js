@@ -541,36 +541,42 @@ document.getElementById("todoForm").addEventListener("submit", function (event) 
     event.preventDefault();
     handleSave();
 });
-
 let deferredPrompt;
-const btnInstall = document.getElementById('btnInstall');
 
-window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('Evento beforeinstallprompt disparado');
-    e.preventDefault();
-    deferredPrompt = e;
-    btnInstall.classList.remove('d-none'); // Mostramos el botón
-});
+document.addEventListener('DOMContentLoaded', () => {
+    const btnInstall = document.getElementById('install');
 
-btnInstall.addEventListener('click', () => {
-    if (!deferredPrompt) return;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
-    deferredPrompt.prompt();
+    if (isStandalone) {
+        if (btnInstall) btnInstall.classList.add('d-none');
+        return;
+    }
 
-    deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-            console.log('Usuario aceptó la instalación');
-        } else {
-            console.log('Usuario rechazó la instalación');
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+
+        if (btnInstall) {
+            btnInstall.classList.remove('d-none');
         }
-        deferredPrompt = null;
     });
+
+    // Evento click del botón
+    if (btnInstall) {
+        btnInstall.addEventListener('click', () => {
+            if (!deferredPrompt) return;
+
+            deferredPrompt.prompt();
+
+            deferredPrompt.userChoice.then((choiceResult) => {
+                deferredPrompt = null;
+                btnInstall.classList.add('d-none');
+            });
+        });
+    }
 });
 
-window.addEventListener('appinstalled', () => {
-    console.log('App instalada con éxito');
-    btnInstall.classList.add('d-none');
-});
 
 
 
