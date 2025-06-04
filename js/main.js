@@ -576,23 +576,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
-function solicitarPermisoNotificacion() {
-    console.log("llamo")
+//funcion para pedir permisos de notificacion al usuario
+function requestPermissionForNotification() {
     if (!('Notification' in window)) {
         alert('Este navegador no soporta notificaciones.');
         return;
     }
 
     Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-            console.log('Permiso para notificaciones concedido ✅');
-        } else {
-            console.warn('Permiso para notificaciones denegado ❌');
-        }
     });
 }
-function mostrarNotificacionTarea() {
+//funcion que permite la visualizacion de notifiaciones
+function showNotification() {
     if (Notification.permission === 'granted') {
 
         const tareaPendiente = allTodoList.find(todo => !todo.check);
@@ -624,9 +619,7 @@ function mostrarNotificacionTarea() {
         }
     }
 }
-setTimeout(() => {
-    mostrarNotificacionTarea();
-}, 2000);
+
 
 
 
@@ -642,5 +635,9 @@ if ('serviceWorker' in navigator) {
 
 AddContainer();
 buildTodoLists();
-solicitarPermisoNotificacion();
+requestPermissionForNotification();
+
+setTimeout(() => {
+    showNotification();
+}, 2000);
 
