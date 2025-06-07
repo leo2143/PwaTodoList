@@ -335,15 +335,15 @@ function createTask(todo) {
   const maxId = allTodoList.reduce((max, todo) => {
     return todo.id > max ? todo.id : max;
   }, 0);
-  if (maxId != 0) {
-    allTodoList.push(
-      new TodoModel(maxId + 1, todo.title, todo.description, false, todo.date)
-    );
-    closeModal();
-    cleanSections();
-    buildTodoLists();
-    updateStorage();
-  }
+
+  // SIEMPRE agregar, sin condicional
+  allTodoList.push(
+    new TodoModel(maxId + 1, todo.title, todo.description, false, todo.date)
+  );
+  closeModal();
+  cleanSections();
+  buildTodoLists();
+  updateStorage();
 }
 //funcion que se encarga de hacer un update al todo
 function updateTask(todo) {
